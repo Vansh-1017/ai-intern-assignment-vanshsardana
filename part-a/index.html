@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Lead Capture</title>
+<style>
+  :root {
+    --ink: #1b2430;
+    --muted: #5c6774;
+    --line: #d7dce2;
+    --accent: #2f5d8a;
+    --accent-dark: #23496d;
+    --error: #b3261e;
+    --bg: #f6f7f9;
+    --card: #ffffff;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    padding: 32px 16px;
+  }
+
+  .card {
+    max-width: 560px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 28px 24px;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0 0 24px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--ink);
+    background: #fff;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(47, 93, 138, 0.15);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 90px;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    font-weight: 400;
+  }
+
+  .radio-option input {
+    margin: 0;
+  }
+
+  .char-count {
+    text-align: right;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .error-msg {
+    color: var(--error);
+    font-size: 0.8rem;
+    margin-top: 5px;
+    display: none;
+  }
+
+  .field.has-error input,
+  .field.has-error select,
+  .field.has-error textarea {
+    border-color: var(--error);
+  }
+
+  .field.has-error .error-msg {
+    display: block;
+  }
+
+  button {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+
+  button:hover {
+    background: var(--accent-dark);
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .thank-you {
+    text-align: center;
+    padding: 20px 0;
+  }
+
+  .thank-you h2 {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+  }
+
+  .thank-you p {
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+
+  @media (max-width: 420px) {
+    .card { padding: 22px 16px; }
+    .radio-group { gap: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="formView">
+    <h1>Talk to our admissions team</h1>
+    <p class="subtitle">Tell us a bit about yourself and we'll get back to you.</p>
+
+    <form id="leadForm" novalidate>
+      <div class="field" id="field-name">
+        <label for="name">Full name</label>
+        <input type="text" id="name" name="name">
+        <div class="error-msg">Please enter your full name.</div>
+      </div>
+
+      <div class="field" id="field-email">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email">
+        <div class="error-msg">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field" id="field-country">
+        <label for="country">Country</label>
+        <select id="country" name="country">
+          <option value="">Select a country</option>
+          <option>India</option>
+          <option>United States</option>
+          <option>United Kingdom</option>
+          <option>Canada</option>
+          <option>Australia</option>
+          <option>Germany</option>
+          <option>United Arab Emirates</option>
+          <option>Singapore</option>
+          <option>Other</option>
+        </select>
+        <div class="error-msg">Please select your country.</div>
+      </div>
+
+      <div class="field" id="field-courseLevel">
+        <label>Course level</label>
+        <div class="radio-group">
+          <label class="radio-option"><input type="radio" name="courseLevel" value="Undergraduate"> Undergraduate</label>
+          <label class="radio-option"><input type="radio" name="courseLevel" value="Postgraduate"> Postgraduate</label>
+          <label class="radio-option"><input type="radio" name="courseLevel" value="PhD"> PhD</label>
+        </div>
+        <div class="error-msg">Please select a course level.</div>
+      </div>
+
+      <div class="field" id="field-university">
+        <label for="university">Preferred university</label>
+        <input type="text" id="university" name="university" placeholder="e.g. University of Toronto">
+        <div class="error-msg">Please enter a preferred university.</div>
+      </div>
+
+      <div class="field" id="field-message">
+        <label for="message">Message</label>
+        <textarea id="message" name="message" maxlength="300"></textarea>
+        <div class="char-count"><span id="charCount">0</span>/300</div>
+        <div class="error-msg">Message cannot be empty.</div>
+      </div>
+
+      <button type="submit" id="submitBtn">Submit</button>
+    </form>
+  </div>
+
+  <div id="thankYouView" class="thank-you hidden">
+    <h2>Thanks — we've got your details.</h2>
+    <p>Someone from our team will reach out within 2 business days.</p>
+  </div>
+</div>
+
+<script>
+  const form = document.getElementById('leadForm');
+  const formView = document.getElementById('formView');
+  const thankYouView = document.getElementById('thankYouView');
+  const messageInput = document.getElementById('message');
+  const charCount = document.getElementById('charCount');
+
+  messageInput.addEventListener('input', () => {
+    charCount.textContent = messageInput.value.length;
+  });
+
+  function setError(fieldId, hasError) {
+    const field = document.getElementById(fieldId);
+    field.classList.toggle('has-error', hasError);
+  }
+
+  function validate() {
+    let isValid = true;
+
+    const name = document.getElementById('name').value.trim();
+    setError('field-name', name.length === 0);
+    if (name.length === 0) isValid = false;
+
+    const email = document.getElementById('email').value.trim();
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailOk = emailPattern.test(email);
+    setError('field-email', !emailOk);
+    if (!emailOk) isValid = false;
+
+    const country = document.getElementById('country').value;
+    setError('field-country', country.length === 0);
+    if (country.length === 0) isValid = false;
+
+    const courseLevel = form.querySelector('input[name="courseLevel"]:checked');
+    setError('field-courseLevel', !courseLevel);
+    if (!courseLevel) isValid = false;
+
+    const university = document.getElementById('university').value.trim();
+    setError('field-university', university.length === 0);
+    if (university.length === 0) isValid = false;
+
+    const message = messageInput.value.trim();
+    setError('field-message', message.length === 0);
+    if (message.length === 0) isValid = false;
+
+    return isValid;
+  }
+
+  function getFormData() {
+    return {
+      fullName: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      country: document.getElementById('country').value,
+      courseLevel: form.querySelector('input[name="courseLevel"]:checked').value,
+      preferredUniversity: document.getElementById('university').value.trim(),
+      message: messageInput.value.trim(),
+      timestamp: new Date().toISOString()
+    };
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
+    const payload = getFormData();
+    console.log(JSON.stringify(payload, null, 2));
+
+    formView.classList.add('hidden');
+    thankYouView.classList.remove('hidden');
+  });
+</script>
+
+</body>
+</html>
