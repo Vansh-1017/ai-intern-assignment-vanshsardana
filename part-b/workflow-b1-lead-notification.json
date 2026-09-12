@@ -1,0 +1,143 @@
+{
+  "name": "B1 - Lead Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-notification",
+        "options": {}
+      },
+      "id": "35b27435-4cd3-466c-9531-13aa947c037f",
+      "name": "Webhook - Lead Form",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1008, 64],
+      "webhookId": "lead-notification-webhook"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "a1", "name": "name", "type": "string", "value": "={{ $json.body.fullName }}" },
+            { "id": "a2", "name": "email", "type": "string", "value": "={{ $json.body.email }}" },
+            { "id": "a3", "name": "courseLevel", "type": "string", "value": "={{ $json.body.courseLevel }}" },
+            { "id": "a4", "name": "message", "type": "string", "value": "={{ $json.body.message }}" },
+            { "id": "a5", "name": "country", "type": "string", "value": "={{ $json.body.country }}" },
+            { "id": "a6", "name": "preferredUniversity", "type": "string", "value": "={{ $json.body.preferredUniversity }}" },
+            { "id": "a7", "name": "timestamp", "type": "string", "value": "={{ $json.body.timestamp }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ca320c2d-2e14-45a1-b53a-d99b83a6b64c",
+      "name": "Extract & Rename Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [-800, 64]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": false, "leftValue": "", "typeValidation": "loose", "version": 1 },
+          "conditions": [
+            { "id": "c1", "leftValue": "={{ $json.courseLevel }}", "rightValue": "Postgraduate", "operator": { "type": "string", "operation": "equals" } },
+            { "id": "c2", "leftValue": "={{ $json.courseLevel }}", "rightValue": "PhD", "operator": { "type": "string", "operation": "equals" } }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "id": "d70d34a6-767f-4819-bf8a-5800e8849b99",
+      "name": "IF - Is PG or PhD",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [-576, 64]
+    },
+    {
+      "parameters": {
+        "sendTo": "notifications@hsateam.example",
+        "subject": "=New {{ $json.courseLevel }} Lead: {{ $json.name }}",
+        "message": "=<h3>New high-priority lead received</h3><p><b>Name:</b> {{ $json.name }}</p><p><b>Email:</b> {{ $json.email }}</p><p><b>Course Level:</b> {{ $json.courseLevel }}</p><p><b>Preferred University:</b> {{ $json.preferredUniversity }}</p><p><b>Country:</b> {{ $json.country }}</p><p><b>Message:</b> {{ $json.message }}</p>",
+        "options": { "appendAttribution": false }
+      },
+      "id": "d00677b1-fc4b-4524-bdec-5fd77f95ddfa",
+      "name": "Gmail - Send Notification",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [-352, -64],
+      "webhookId": "d21246f0-70ab-4d4f-ae29-fbe8d8bd1ba2",
+      "credentials": {
+        "gmailOAuth2": { "id": "PLACEHOLDER_GMAIL_CRED_ID", "name": "Gmail account" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "PLACEHOLDER_GOOGLE_SHEET_ID",
+          "mode": "list",
+          "cachedResultName": "PLACEHOLDER_SHEET_NAME",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/PLACEHOLDER_GOOGLE_SHEET_ID/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 672907928,
+          "mode": "list",
+          "cachedResultName": "Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/PLACEHOLDER_GOOGLE_SHEET_ID/edit#gid=672907928"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.name }}",
+            "Email": "={{ $json.email }}",
+            "Course Level": "={{ $json.courseLevel }}",
+            "Preferred University": "={{ $json.preferredUniversity }}",
+            "Country": "={{ $json.country }}",
+            "Message": "={{ $json.message }}",
+            "Timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            { "id": "Name", "displayName": "Name", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Email", "displayName": "Email", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Course Level", "displayName": "Course Level", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Preferred University", "displayName": "Preferred University", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Country", "displayName": "Country", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Message", "displayName": "Message", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true },
+            { "id": "Timestamp", "displayName": "Timestamp", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": true }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "eae19b39-7232-49ee-aef3-a4762360fb10",
+      "name": "Google Sheets - Log Lead",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [-352, 176],
+      "credentials": {
+        "googleSheetsOAuth2Api": { "id": "PLACEHOLDER_GOOGLE_SHEETS_CRED_ID", "name": "Google Sheets account" }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook - Lead Form": { "main": [[{ "node": "Extract & Rename Fields", "type": "main", "index": 0 }]] },
+    "Extract & Rename Fields": { "main": [[{ "node": "IF - Is PG or PhD", "type": "main", "index": 0 }]] },
+    "IF - Is PG or PhD": {
+      "main": [
+        [{ "node": "Gmail - Send Notification", "type": "main", "index": 0 }],
+        [{ "node": "Google Sheets - Log Lead", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "templateCredsSetupCompleted": true,
+    "instanceId": "PLACEHOLDER_INSTANCE_ID"
+  }
+}

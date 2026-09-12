@@ -1,0 +1,93 @@
+{
+  "name": "B2 - Scheduled Data Fetch",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            { "field": "cronExpression", "expression": "0 9 * * *" }
+          ]
+        }
+      },
+      "id": "6bbb5e87-c3c9-4360-9a83-c1a23a18e742",
+      "name": "Schedule Trigger - 9AM Daily",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-432, 208]
+    },
+    {
+      "parameters": {
+        "url": "http://universities.hipolabs.com/search",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "country", "value": "United States" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "832d55c9-c684-4285-bdc5-553044e65269",
+      "name": "HTTP Request - Hipolabs Universities API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-208, 208]
+    },
+    {
+      "parameters": {
+        "jsCode": "// The HTTP Request node auto-splits a JSON array response into one\n// n8n item per element, so `items` already IS the list of universities.\nconst items = $input.all();\nlet list = items.map((item) => item.json);\n\n// Fallback: if it ever comes back as a single item wrapping the whole\n// array instead (e.g. \"Split Into Items\" gets toggled off), unwrap it.\nif (list.length === 1 && Array.isArray(list[0])) {\n  list = list[0];\n}\n\nconst filtered = list\n  .slice(0, 10)\n  .map((uni) => ({\n    universityName: uni.name || 'Unknown',\n    country: uni.country || 'Unknown',\n    domain: Array.isArray(uni.domains) && uni.domains.length ? uni.domains[0] : 'N/A',\n    website: Array.isArray(uni.web_pages) && uni.web_pages.length ? uni.web_pages[0] : 'N/A'\n  }));\n\nreturn filtered.map((entry) => ({ json: entry }));"
+      },
+      "id": "927ed99e-a1b6-47df-b17e-a7b66ef0b66c",
+      "name": "Code - Filter & Transform",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [16, 208]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            { "id": "b1", "name": "universityName", "type": "string", "value": "={{ $json.universityName }}" },
+            { "id": "b2", "name": "country", "type": "string", "value": "={{ $json.country }}" },
+            { "id": "b3", "name": "domain", "type": "string", "value": "={{ $json.domain }}" },
+            { "id": "b4", "name": "website", "type": "string", "value": "={{ $json.website }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "66e1e8e2-1895-435d-814b-df38f09c984e",
+      "name": "Set - Clean Labelled Fields",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [240, 208]
+    },
+    {
+      "parameters": {
+        "sendTo": "notifications@hsateam.example",
+        "subject": "=Daily University Data Digest - {{ $now.format('yyyy-LL-dd') }}",
+        "message": "={{ (() => { const rows = $input.all().map(i => `<tr><td>${i.json.universityName}</td><td>${i.json.country}</td><td>${i.json.domain}</td><td><a href=\"${i.json.website}\">${i.json.website}</a></td></tr>`).join(''); return `<h3>Daily University Fetch (${$input.all().length} records)</h3><table border=\"1\" cellpadding=\"6\" style=\"border-collapse:collapse\"><tr><th>University</th><th>Country</th><th>Domain</th><th>Website</th></tr>${rows}</table>`; })() }}",
+        "options": { "appendAttribution": false }
+      },
+      "id": "e1128e11-d11e-4719-9ca0-0455a290a858",
+      "name": "Gmail - Send Digest",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [448, 208],
+      "executeOnce": true,
+      "webhookId": "aa4b19c5-de0d-47ff-85aa-c97933f694cf",
+      "credentials": {
+        "gmailOAuth2": { "id": "PLACEHOLDER_GMAIL_CRED_ID", "name": "Gmail account" }
+      }
+    }
+  ],
+  "connections": {
+    "Schedule Trigger - 9AM Daily": { "main": [[{ "node": "HTTP Request - Hipolabs Universities API", "type": "main", "index": 0 }]] },
+    "HTTP Request - Hipolabs Universities API": { "main": [[{ "node": "Code - Filter & Transform", "type": "main", "index": 0 }]] },
+    "Code - Filter & Transform": { "main": [[{ "node": "Set - Clean Labelled Fields", "type": "main", "index": 0 }]] },
+    "Set - Clean Labelled Fields": { "main": [[{ "node": "Gmail - Send Digest", "type": "main", "index": 0 }]] }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "PLACEHOLDER_INSTANCE_ID"
+  }
+}
