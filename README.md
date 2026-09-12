@@ -1,7 +1,9 @@
 # AI Intern Assignment — HSA Team
 
 **Name:** Vansh Sardana
+
 **Email:** vanshsardana874@gmail.com
+
 **Date:** September 12, 2026
 
 ## Part A — Lead Capture Form
@@ -34,7 +36,8 @@ Pure HTML/CSS/vanilla JS form (`part-a/index.html`) with inline validation, a 30
 
 **To run:** replace `WEBHOOK_URL` in the script with your B1 Production webhook URL, then open the file the same way as Part A.
 
-**Demo recording:** `part-c/demo.mp4`
+**Demo recording:** `part-c/drive-link.txt` or https://drive.google.com/file/d/1nzCzCd8ZeLGhVnBb5oUohaGvgxwLw5b8/view?usp=sharing
+
 
 ## Challenges Faced
 
